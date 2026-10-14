@@ -96,9 +96,14 @@ func TestMaxChunks(t *testing.T) {
 	}
 
 	// Сравнение с однопоточной версией на большом объёме данных.
+	// Используем локальный генератор вместо устаревшего rand.Seed.
 	t.Run("совпадает с maximum на большом слайсе", func(t *testing.T) {
-		rand.Seed(1)
-		data := generateRandomElements(100_000)
+		r := rand.New(rand.NewSource(1))
+		data := make([]int, 100_000)
+		for i := range data {
+			data[i] = r.Int()
+		}
+
 		want := maximum(data)
 		got := maxChunks(data)
 		if got != want {
